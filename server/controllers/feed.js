@@ -3,6 +3,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const path = require('path');
 const fs = require('fs');
+const io = require('../socket');
 
 exports.getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -63,6 +64,7 @@ exports.createPost = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
+      io.getIO().emit('posts', { action: 'create', post: post });
       res.status(201).json({
         message: 'Post created successfully!',
         post: post,
